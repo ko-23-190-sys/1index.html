@@ -1,379 +1,208 @@
 <!DOCTYPE html>
 <html lang="ru" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BaaS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        /* ===== LIGHT THEME (original) ===== */
-        :root {
-            --bg-page: #f4f7f6;
-            --bg-card: #ffffff;
-            --bg-like: #f8f9fa;
-            --bg-like-hover: #e2e6ea;
-            --border: #ddd;
-            --border-post: #eaeaea;
-            --text-main: #212529;
-            --text-muted: #999;
-            --input-text: #212529;
-            --shadow: 0 4px 15px rgba(0,0,0,0.05);
-            --btn-bg: #007bff;
-            --btn-hover: #0056b3;
-            --toggle-bg: #e2e6ea;
-            --toggle-knob: #ffffff;
-            --toggle-icon: '🌙';
-        }
+<meta charset="UTF-8">
+<title>DM System</title>
 
-        /* ===== DARK THEME ===== */
-        [data-theme="dark"] {
-            --bg-page: #0d0f14;
-            --bg-card: #161b27;
-            --bg-like: #1e2535;
-            --bg-like-hover: #252d42;
-            --border: #2a3348;
-            --border-post: #1e2535;
-            --text-main: #e8eaf0;
-            --text-muted: #5a6480;
-            --input-text: #c8ccd8;
-            --shadow: 0 4px 30px rgba(0,0,0,0.4);
-            --btn-bg: #3d6ef5;
-            --btn-hover: #2a57e0;
-            --toggle-bg: #3d6ef5;
-            --toggle-knob: #ffffff;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: #f4f7f6;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
 
-        /* ===== BASE STYLES ===== */
-        *, *::before, *::after { box-sizing: border-box; }
+.container {
+    width: 500px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+}
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-page);
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            transition: background 0.35s ease, color 0.35s ease;
-        }
+.user {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
 
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--bg-card);
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--border);
-            transition: background 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-        }
+.user:hover {
+    background: #f0f0f0;
+}
 
-        .container h3 {
-            margin-top: 0;
-            color: var(--text-main);
-            transition: color 0.35s ease;
-        }
+.chat {
+    height: 300px;
+    overflow-y: auto;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
 
-        /* Стили блока авторизации */
-        .auth-bar { background: var(--bg-card); padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--btn-bg); }
+.msg {
+    margin: 5px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    display: inline-block;
+}
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background: var(--bg-card);
-            color: var(--input-text);
-            transition: background 0.35s ease, border-color 0.35s ease, color 0.35s ease;
-            outline: none;
-        }
+.me {
+    background: #3d6ef5;
+    color: white;
+    float: right;
+    clear: both;
+}
 
-        input:focus {
-            border-color: var(--btn-bg);
-            box-shadow: 0 0 0 3px rgba(61,110,245,0.15);
-        }
-
-        input::placeholder {
-            color: var(--text-muted);
-        }
-
-        button {
-            background: var(--btn-bg);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 6px;
-            width: 100%;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.1s;
-        }
-
-        button:hover { background: var(--btn-hover); }
-        button:active { transform: scale(0.98); }
-        button:disabled { background: #ccc; }
-
-        .logout-btn { background: #ff4757; padding: 8px 15px; width: auto; font-size: 14px; }
-
-        .post {
-            background: var(--bg-card);
-            border: 1px solid var(--border-post);
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 8px;
-            width: 100%;
-            max-width: 500px;
-            position: relative;
-            color: var(--text-main);
-            box-shadow: var(--shadow);
-            transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-        }
-
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-        .post-avatar { width: 30px; height: 30px; border-radius: 50%; }
-
-        .like-btn {
-            cursor: pointer;
-            border: none;
-            background: var(--bg-like);
-            color: var(--text-main);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            width: auto;
-            margin-top: 10px;
-            transition: background 0.2s, color 0.2s;
-        }
-
-        .like-btn:hover { background: var(--bg-like-hover); }
-
-        .time {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-left: auto;
-            transition: color 0.35s ease;
-        }
-
-        /* ===== THEME TOGGLE ===== */
-        .theme-toggle-wrap {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 12px;
-        }
-
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            user-select: none;
-            font-size: 13px;
-            color: var(--text-muted);
-            transition: color 0.3s;
-        }
-
-        .theme-toggle:hover { color: var(--text-main); }
-
-        .toggle-track {
-            width: 44px;
-            height: 24px;
-            background: var(--toggle-bg);
-            border-radius: 50px;
-            position: relative;
-            transition: background 0.35s ease;
-            flex-shrink: 0;
-        }
-
-        .toggle-knob {
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 18px;
-            height: 18px;
-            background: var(--toggle-knob);
-            border-radius: 50%;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.25);
-            transition: transform 0.35s cubic-bezier(.4,0,.2,1), background 0.35s;
-        }
-
-        [data-theme="dark"] .toggle-knob {
-            transform: translateX(20px);
-        }
-
-        .toggle-icon {
-            font-size: 15px;
-        }
-    </style>
+.other {
+    background: #eee;
+    float: left;
+    clear: both;
+}
+</style>
 </head>
+
 <body>
 
-    <!-- THEME TOGGLE -->
-    <div class="theme-toggle-wrap">
-        <label class="theme-toggle" id="themeToggle" title="Сменить тему">
-            <span class="toggle-icon" id="toggleIcon">🌙</span>
-            <div class="toggle-track">
-                <div class="toggle-knob"></div>
-            </div>
-            <span id="toggleLabel">Тёмная тема</span>
-        </label>
-    </div>
+<div class="container">
 
-    <!-- БЛОК АВТОРИЗАЦИИ -->
-    <div id="authSection" class="container" style="max-width: 500px; text-align: center;">
-        <button id="loginBtn">Войти через Google</button>
-        <div id="userInfo" style="display: none;" class="auth-bar">
-            <img id="userPhoto" class="user-avatar" src="" alt="Avatar">
-            <span id="userName" style="font-weight: bold;"></span>
-            <button id="logoutBtn" class="logout-btn">Выйти</button>
-        </div>
-    </div>
+<button id="loginBtn">Войти через Google</button>
+<button id="logoutBtn">Выйти</button>
 
-    <!-- ФОРМА СОЗДАНИЯ ЗАПИСИ (скрыта для гостей) -->
-    <div id="messageForm" class="container" style="display: none; margin-top: 20px;">
-        <h3>Создать запись</h3>
-        <input type="text" id="name" placeholder="Имя профиля" readonly>
-        <input type="email" id="email" placeholder="Ваш Email" readonly>
-        <input type="text" id="content" placeholder="Что у вас нового?">
-        <button id="mainBtn">Опубликовать в облако</button>
-    </div>
+<h3 id="userName"></h3>
 
-    <div id="feed" style="width: 100%; max-width: 500px;"></div>
+<h4>Выберите собеседника:</h4>
+<div id="usersList"></div>
 
-    <script>
-        // ===== DARK THEME TOGGLE LOGIC =====
-        const html = document.documentElement;
-        const toggleIcon = document.getElementById('toggleIcon');
-        const toggleLabel = document.getElementById('toggleLabel');
+<h4 id="chatTitle"></h4>
 
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        html.setAttribute('data-theme', savedTheme);
-        updateToggleUI(savedTheme);
+<div id="chat" class="chat"></div>
 
-        document.getElementById('themeToggle').addEventListener('click', () => {
-            const current = html.getAttribute('data-theme');
-            const next = current === 'light' ? 'dark' : 'light';
-            html.setAttribute('data-theme', next);
-            localStorage.setItem('theme', next);
-            updateToggleUI(next);
-        });
+<input id="messageInput" placeholder="Ваше сообщение...">
+<button id="sendBtn">▶</button>
 
-        function updateToggleUI(theme) {
-            if (theme === 'dark') {
-                toggleIcon.textContent = '☀️';
-                toggleLabel.textContent = 'Светлая тема';
-            } else {
-                toggleIcon.textContent = '🌙';
-                toggleLabel.textContent = 'Тёмная тема';
-            }
-        }
-    </script>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { 
-            getFirestore, collection, addDoc, query, orderBy, onSnapshot,
-            serverTimestamp, updateDoc, doc, increment 
-        } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 
-        // КОНФИГУРАЦИЯ
-        const firebaseConfig = {
-           apiKey: "AIzaSyBG5jyHkmVzNavhzsQSPVmqUytV0uCycd0",
-           authDomain: "registracya-web-prilogenya.firebaseapp.com",
-           projectId: "registracya-web-prilogenya",
-           storageBucket: "registracya-web-prilogenya.firebasestorage.app",
-           messagingSenderId: "506566801962",
-           appId: "1:506566801962:web:5bc78359d491873f402153",
-           measurementId: "G-3P5VK6PPMG"
-       };
+import {
+getFirestore, collection, addDoc, query, orderBy,
+onSnapshot, serverTimestamp, doc, setDoc, where
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
+import {
+getAuth, signInWithPopup, GoogleAuthProvider,
+signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-        // --- ЛОГИКА АВТОРИЗАЦИИ ---
-        const loginBtn = document.getElementById('loginBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userInfo = document.getElementById('userInfo');
-        const messageForm = document.getElementById('messageForm');
+// CONFIG
+const firebaseConfig = {
+apiKey: "YOUR_KEY",
+authDomain: "YOUR_DOMAIN",
+projectId: "YOUR_ID",
+};
 
-        loginBtn.onclick = () => signInWithPopup(auth, provider);
-        logoutBtn.onclick = () => signOut(auth);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                loginBtn.style.display = 'none';
-                userInfo.style.display = 'flex';
-                messageForm.style.display = 'block';
-                document.getElementById('userName').innerText = user.displayName;
-                document.getElementById('userPhoto').src = user.photoURL;
-                document.getElementById('name').value = user.displayName;
-                document.getElementById('email').value = user.email;
-            } else {
-                loginBtn.style.display = 'block';
-                userInfo.style.display = 'none';
-                messageForm.style.display = 'none';
-            }
-        });
+// LOGIN
+loginBtn.onclick = () => signInWithPopup(auth, provider);
+logoutBtn.onclick = () => signOut(auth);
 
-        // МЕТОД: АТОМАРНОЕ ОБНОВЛЕНИЕ (LIKES)
-        window.processLike = async (id) => {
-            const docRef = doc(db, "requests", id);
-            try {
-                await updateDoc(docRef, { likes: increment(1) });
-            } catch (e) {
-                console.error("Validation Error:", e.message);
-            }
-        };
+// CHAT STATE
+let currentChatId = null;
+let currentReceiver = null;
 
-        // МЕТОД: ЗАПИСЬ С ВАЛИДАЦИЕЙ
-        document.getElementById('mainBtn').onclick = async () => {
-            const content = document.getElementById('content').value;
-            if (!content) return alert("Введите текст сообщения!");
+// CREATE CHAT ID
+function getChatId(a, b) {
+return [a, b].sort().join("_");
+}
 
-            const btn = document.getElementById('mainBtn');
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, "requests"), {
-                    name: auth.currentUser.displayName,
-                    email: auth.currentUser.email,
-                    photo: auth.currentUser.photoURL,
-                    text: content,
-                    likes: 0,
-                    timestamp: serverTimestamp()
-                });
-                document.getElementById('content').value = "";
-            } catch (e) {
-                alert("Ошибка безопасности! Проверьте правила (Rules) в Firebase.");
-            }
-            btn.disabled = false;
-        };
+// AUTH STATE
+onAuthStateChanged(auth, async (user) => {
 
-        // МЕТОД: REAL-TIME СИНХРОНИЗАЦИЯ
-        const q = query(collection(db, "requests"), orderBy("timestamp", "desc"));
-        onSnapshot(q, (snapshot) => {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = "";
-            snapshot.forEach((document_) => {
-                const data = document_.data();
-                feed.innerHTML += `
-                    <div class="post">
-                        <div class="post-header">
-                            <img class="post-avatar" src="${data.photo || ''}" alt="avatar">
-                            <b>${data.name}</b>
-                            <span class="time">${data.timestamp?.toDate().toLocaleTimeString() || '...'}</span>
-                        </div>
-                        <p style="margin: 5px 0;">${data.text || data.email || ''}</p>
-                        <button class="like-btn" onclick="processLike('${document_.id}')">👍 ${data.likes || 0}</button>
-                    </div>
-                `;
-            });
-        });
-    </script>
+if (!user) return;
+
+userName.innerText = user.displayName;
+
+// SAVE USER
+await setDoc(doc(db, "users", user.uid), {
+name: user.displayName,
+email: user.email,
+photo: user.photoURL
+});
+
+// LOAD USERS
+onSnapshot(collection(db, "users"), (snap) => {
+
+usersList.innerHTML = "";
+
+snap.forEach(d => {
+
+if (d.id === user.uid) return;
+
+const u = d.data();
+
+usersList.innerHTML += `
+<div class="user" onclick="openChat('${d.id}', '${u.name}')">
+${u.name}
+</div>
+`;
+});
+});
+});
+
+// OPEN CHAT
+window.openChat = (uid, name) => {
+
+currentReceiver = uid;
+currentChatId = getChatId(auth.currentUser.uid, uid);
+
+chatTitle.innerText = "Чат с: " + name;
+
+// LISTEN MESSAGES
+const q = query(
+collection(db, "messages"),
+where("chatId", "==", currentChatId),
+orderBy("timestamp")
+);
+
+onSnapshot(q, (snap) => {
+
+chat.innerHTML = "";
+
+snap.forEach(doc => {
+
+const m = doc.data();
+
+chat.innerHTML += `
+<div class="msg ${m.senderId === auth.currentUser.uid ? 'me' : 'other'}">
+${m.text}
+</div>
+`;
+});
+
+chat.scrollTop = chat.scrollHeight;
+});
+};
+
+// SEND MESSAGE
+sendBtn.onclick = async () => {
+
+const text = messageInput.value;
+if (!text || !currentReceiver) return;
+
+await addDoc(collection(db, "messages"), {
+chatId: currentChatId,
+senderId: auth.currentUser.uid,
+text: text,
+timestamp: serverTimestamp()
+});
+
+messageInput.value = "";
+};
+
+</script>
 </body>
 </html>
